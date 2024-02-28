@@ -41,7 +41,7 @@
 ```php
 <?php
 
-include('src/api.php');
+include('src/HiddifyApi.php');
 
 $api = new hiddifyApi(
     '', //! https://domain.com

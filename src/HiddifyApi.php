@@ -1,10 +1,12 @@
 <?php
 
+namespace MrWebappDeveloper\HiddifyApiPhp;
+
 if (version_compare(phpversion(), "8.0.0", "<=")) {
     die('Use PHP 8 or later :) Stay Updated');
 }
 
-class hiddifyApi
+class HiddifyApi
 {
     protected $urlUser, $urlAdmin;
     public $User;
