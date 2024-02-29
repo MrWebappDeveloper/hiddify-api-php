@@ -2,7 +2,7 @@
 
 namespace MrWebappDeveloper\HiddifyApiPhp;
 
-class User extends hiddifyApi
+class User
 {
     public function __construct(
         private HiddifyApi $hiddifyApi
