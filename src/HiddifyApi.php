@@ -42,7 +42,7 @@ class HiddifyApi
     public function user():User
     {
         if(!isset(self::$singleton[User::class]))
-            self::$singleton = new User($this);
+            self::$singleton[User::class] = new User($this);
 
         return self::$singleton[User::class];
     }
