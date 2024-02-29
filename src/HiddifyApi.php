@@ -16,7 +16,6 @@ class HiddifyApi
     private static array $singleton;
 
     public $urlUser, $urlAdmin;
-    public $User;
 
     /**
      * Constructor
