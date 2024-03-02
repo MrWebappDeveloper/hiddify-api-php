@@ -91,7 +91,7 @@ class HiddifyApi
      *
      * @return string
      */
-    protected function generateRandomUUID(): string
+    public function generateRandomUUID(): string
     {
         $data = openssl_random_pseudo_bytes(16);
         $data[6] = chr(ord($data[6]) & 0x0f | 0x40);

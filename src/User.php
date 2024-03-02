@@ -2,6 +2,8 @@
 
 namespace MrWebappDeveloper\HiddifyApiPhp;
 
+use Intech\Tool\Helper;
+
 class User
 {
     public function __construct(
@@ -53,7 +55,7 @@ class User
             'Content-Type: application/json',
         );
 
-        $uuid = $this->generateRandomUUID();
+        $uuid = $this->hiddifyApi->generateRandomUUID();
 
         $data = array(
             'added_by_uuid' => $this->hiddifyApi->adminSecret,
@@ -154,5 +156,16 @@ class User
         $userdata['subData'] = $this->getDataFromSub($uuid);
 
         return $userdata;
+    }
+
+    /**
+     * Delete user from panel
+     *
+     * @param string $uuid
+     * @return bool
+     */
+    public function delete(string $uuid):bool
+    {
+        Helper::debugging()->dd($this->find($uuid));
     }
 }

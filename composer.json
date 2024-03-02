@@ -5,7 +5,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "MrWebappDeveloper\\HiddifyApiPhp\\": "src/"
+            "MrWebappDeveloper\\HiddifyApiPhp\\": "src/",
+            "Tests\\" : "tests/"
         }
     },
     "authors": [
@@ -14,5 +15,9 @@
             "email": "anonymous@none.no"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "irannewtech/tool": "^1.2",
+        "phpunit/phpunit": "^11.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
 }
