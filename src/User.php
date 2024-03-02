@@ -35,6 +35,7 @@ class User
      * @param string $name
      * @param int $package_days
      * @param int $package_size
+     * @param string|null $uuid
      * @param string|null $telegram_id
      * @param string|null $comment
      * @param string $resetMod
@@ -44,6 +45,7 @@ class User
         string $name,
         int $package_days = 30,
         int $package_size = 30,
+        ?string $uuid = null,
         string $telegram_id = null,
         string $comment = null,
         string $resetMod = 'no_reset'
@@ -55,7 +57,7 @@ class User
             'Content-Type: application/json',
         );
 
-        $uuid = $this->hiddifyApi->generateRandomUUID();
+        $finalUuid = $uuid ?? $this->generateRandomUUID();
 
         $data = array(
             'added_by_uuid' => $this->hiddifyApi->adminSecret,
@@ -69,7 +71,7 @@ class User
             'start_date' => date('Y-m-d'),
             'telegram_id' => $telegram_id,
             'usage_limit_GB' => $package_size,
-            'uuid' => $uuid
+            'uuid' => $finalUuid
         );
 
         $data_string = json_encode($data);
