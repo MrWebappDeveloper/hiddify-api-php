@@ -4,9 +4,12 @@ namespace Tests;
 
 use Intech\Tool\Helper;
 use MrWebappDeveloper\HiddifyApiPhp\HiddifyApi;
+use Tests\Traits\WithFaker;
 
 class UserTest extends TestCase
 {
+    use WithFaker;
+
     /**
      * Hiddify api service method factory
      *
@@ -24,16 +27,24 @@ class UserTest extends TestCase
     /**
      * @return void
      */
-    public function test_delete_user()
+    public function test_create_user()
     {
         $api = $this->buildHiddifyApi();
 
+        $user = (object)[
+            'name' => $this->faker->name,
+            'days' => rand(1, 365),
+            'size' => rand(1, 100),
+            'uuid' => $this->faker->uuid,
+        ];
+
         $res = $api->user()->create(
-            '14165465',
-            30,
-            30,
+            $user->name,
+            $user->days,
+            $user->size,
+            uuid: $user->uuid
         );
 
-        Helper::debugging()->dd($res);
+        $this->assertSame($res, $user->uuid);
     }
 }
