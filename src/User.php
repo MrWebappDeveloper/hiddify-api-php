@@ -3,6 +3,7 @@
 namespace MrWebappDeveloper\HiddifyApiPhp;
 
 use Intech\Tool\Helper;
+use MrWebappDeveloper\HtmlQuerySelector\QuerySelector;
 
 class User
 {
@@ -138,12 +139,44 @@ class User
     }
 
     /**
+     * Find user in panel id through its uuid
+     *
+     * @param string $uuid
+     * @return int|null
+     */
+    private function extractId(string $uuid):int|null
+    {
+        $url = $this->hiddifyApi->urlAdmin . 'admin/user/';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        $selector = new QuerySelector($result);
+
+        $href = $selector->tag('tr')
+            ->contains($uuid)
+            ->tag('a')
+            ->attribute('title', 'Edit Record')
+            ->select()->item(0)->getAttribute('href');
+
+        if(!$href)
+            return null;
+
+        preg_match('/\?id=(\d+)/', $href, $matches);
+
+        return $matches[1] ?? null;
+    }
+
+    /**
      * Find and Get user data with uuid
      *
      * @param string $uuid
-     * @return array
+     * @return array|null
      */
-    public function find(string $uuid): array
+    public function find(string $uuid): array | null
     {
         $url = $this->hiddifyApi->urlAdmin . 'api/v1/user/';
 
@@ -154,7 +187,12 @@ class User
         curl_close($ch);
 
         $data = json_decode($result, true);
+
         $userdata = $this->findElementByUuid($data, $uuid);
+
+        if(!isset($userdata['added_by_uuid']))
+            return null;
+
         $userdata['subData'] = $this->getDataFromSub($uuid);
 
         return $userdata;
@@ -168,6 +206,25 @@ class User
      */
     public function delete(string $uuid):bool
     {
-        Helper::debugging()->dd($this->find($uuid));
+        $url = $this->hiddifyApi->urlAdmin . 'admin/user/delete/';
+
+        if(!$id = $this->extractId($uuid))
+            return false;
+
+        $data = http_build_query([
+            'id' => $id,
+            'url' => $this->hiddifyApi->path . "/" . $this->hiddifyApi->adminSecret . "/admin/user/"
+        ]);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+
+        $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        return (bool)$httpStatusCode == 302;
     }
 }
