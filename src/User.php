@@ -31,7 +31,7 @@ class User
     }
 
     /**
-     * Create new user in the panel
+     * Uses for send update and create user request
      *
      * @param string $name
      * @param int $package_days
@@ -42,7 +42,7 @@ class User
      * @param string $resetMod
      * @return string|bool
      */
-    public function create(
+    private function updateOrCreate(
         string $name,
         int $package_days = 30,
         int $package_size = 30,
@@ -50,7 +50,8 @@ class User
         string $telegram_id = null,
         string $comment = null,
         string $resetMod = 'no_reset'
-    ): string | bool {
+    ): string | bool
+    {
         $url = $this->hiddifyApi->urlAdmin . 'api/v1/user/';
 
         $headers = array(
@@ -58,7 +59,7 @@ class User
             'Content-Type: application/json',
         );
 
-        $finalUuid = $uuid ?? $this->generateRandomUUID();
+        $finalUuid = $uuid ?? $this->hiddifyApi->generateRandomUUID();
 
         $data = array(
             'added_by_uuid' => $this->hiddifyApi->adminSecret,
@@ -90,6 +91,54 @@ class User
         } else {
             return false;
         }
+    }
+
+    /**
+     * Create new user in the panel
+     *
+     * @param string $name
+     * @param int $package_days
+     * @param int $package_size
+     * @param string|null $uuid
+     * @param string|null $telegram_id
+     * @param string|null $comment
+     * @param string $resetMod
+     * @return string|bool
+     */
+    public function create(
+        string $name,
+        int $package_days = 30,
+        int $package_size = 30,
+        ?string $uuid = null,
+        string $telegram_id = null,
+        string $comment = null,
+        string $resetMod = 'no_reset'
+    ): string | bool {
+        return $this->updateOrCreate($name, $package_days, $package_size, $uuid, $telegram_id, $comment, $resetMod);
+    }
+
+    /**
+     * Update user in the panel
+     *
+     * @param string $name
+     * @param int $package_days
+     * @param int $package_size
+     * @param string|null $uuid
+     * @param string|null $telegram_id
+     * @param string|null $comment
+     * @param string $resetMod
+     * @return string|bool
+     */
+    public function update(
+        string $name,
+        int $package_days = 30,
+        int $package_size = 30,
+        ?string $uuid = null,
+        string $telegram_id = null,
+        string $comment = null,
+        string $resetMod = 'no_reset'
+    ): string | bool {
+        return $this->updateOrCreate($name, $package_days, $package_size, $uuid, $telegram_id, $comment, $resetMod);
     }
 
     /**
@@ -146,21 +195,43 @@ class User
      */
     private function extractId(string $uuid):int|null
     {
-        $url = $this->hiddifyApi->urlAdmin . 'admin/user/';
+        $count = null;
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $page = 1;
 
-        $selector = new QuerySelector($result);
+        while (1){
+            $url = $this->hiddifyApi->urlAdmin . 'admin/user/' . ($page > 1 ? "?page=" . ($page - 1) : '');
 
-        $href = $selector->tag('tr')
-            ->contains($uuid)
-            ->tag('a')
-            ->attribute('title', 'Edit Record')
-            ->select()->item(0)->getAttribute('href');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            $selector = new QuerySelector($result);
+
+            $tag = $selector->tag('tr')
+                ->contains($uuid)
+                ->tag('a')
+                ->attribute('title', 'Edit Record')
+                ->select()->item(0);
+
+            if(!$tag){
+                if (!$count)
+                    $count = $this->count();
+
+                if($count < 51 || ($page * 50) > $count)
+                    return null;
+
+                $page += 1;
+
+                continue;
+            }
+
+            $href = $tag->getAttribute('href');
+
+            break;
+        }
 
         if(!$href)
             return null;
@@ -196,6 +267,41 @@ class User
         $userdata['subData'] = $this->getDataFromSub($uuid);
 
         return $userdata;
+    }
+
+    /**
+     * Returns count of registered users
+     *
+     * @return int|null
+     */
+    public function count():int|null
+    {
+        $url = $this->hiddifyApi->urlAdmin . 'admin/user/';
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        if(!$result)
+            return null;
+
+        $selector = new QuerySelector($result);
+
+        $tag = $selector->tag('div')
+            ->attribute('class', 'card-header')
+            ->tag('span')
+            ->select();
+
+        if(!$tag)
+            return null;
+
+        $content = $tag->item(0)->textContent;
+
+        $explode = explode(':', $content);
+
+        return $explode[1] ?? null;
     }
 
     /**
