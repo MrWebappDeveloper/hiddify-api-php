@@ -133,7 +133,7 @@ class User
         string $name,
         int $package_days = 30,
         int $package_size = 30,
-        ?string $uuid = null,
+        string $uuid = null,
         string $telegram_id = null,
         string $comment = null,
         string $resetMod = 'no_reset'
