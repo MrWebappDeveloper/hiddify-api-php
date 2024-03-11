@@ -15,18 +15,22 @@
     - [x] Get user list
     - [x] Get User Info + Servers & Time Remain
     - [x] Add User
-    - [ ] Del User
+    - [x] Del User
+    - [x] Update User
     - [ ] Del deactive Usres
     - [ ] Get Telegram Proxy If available
   - #### Admin
     - [ ] Get Admin list
     - [ ] Add New Admin
     - [ ] Del admin
+  - #### Unit Tests
+    - [x] Add User
+    - [x] Del User
 
 - ### Support More Language
 
   - [x] PHP 🐘 [Code](https://github.com/alix1383/hiddify-api/blob/main/php/api.php) | [Doc](https://github.com/alix1383/hiddify-api#-usage-php-)
-  - [x] NodeJS ✨ [Code](https://github.com/alix1383/hiddify-api/blob/main/node-js/api.js) | [Doc](https://github.com/alix1383/hiddify-api#-usage-node-js-) By <b>[Mr_artan](https://github.com/msaebi031)</b> -> [Telegram](https://t.me/mr_saebi)
+  - [ ] NodeJS ✨ [Code](https://github.com/alix1383/hiddify-api/blob/main/node-js/api.js) | [Doc](https://github.com/alix1383/hiddify-api#-usage-node-js-) By <b>[Mr_artan](https://github.com/msaebi031)</b> -> [Telegram](https://t.me/mr_saebi)
   - [ ] Python 🐍 \*need help
   - MORE...
 
@@ -56,42 +60,30 @@ $api->getSystemStats(); // return array
 
 /////----------- USER API -----------\\\\\
 
-$api->User->addUser(string $name,
-                    int $package_days = 30,
-                    int $package_size = 30,
-                    ?string $telegram_id = null,
-                    ?string $comment = null
-                    string $resetMod = 'no_reset'); //! if success return user uuid else return false
+//! if success return user uuid else return false
+$api->user()->create(name: 'MrWebappDeveloper',
+                    package_days: 30,
+                    package_size: 30,
+                    telegram_id: null, // optional
+                    comment: null, // optional
+                    resetMod: 'no_reset'); // 'no_reset' default
+                    
+//! if success return user uuid else return false
+$api->user()->update(name: 'MrWebappDeveloper',
+                    package_days: 30,
+                    package_size: 30,
+                    uuid: "user uuid"
+                    telegram_id: null, // optional
+                    comment: null, // optional
+                    resetMod: 'no_reset'); // 'no_reset' default
+                    
+$api->user()->delete(string $uuid); // returns bool
 
-$api->User->getUserList(); // return array
+$api->user()->list(); // return array
 
-$api->User->getUserdetais(string $uuid); // return array
+$api->user()->find(string $uuid); // returns user details in an array and returns null if can't find.
 
 ?>
-```
-
-<br>
-
-## 💡 Usage Node js :
-
-Be sure to install axios,moment,dotenv modules before running !
-
-```js
-import hiddifyApi from "node-js/api.js";
-
-const api = new hiddifyApi(); // first edit your .env file
-
-api.is_connected(); // return bool
-
-api.getSystemStatus(); // return array
-
-/////----------- USER API -----------\\\\\
-const uuid = api.generateuuid();
-api.addServise({ uuid, comment: "test", name: "hiddify api", day: 30, traficc: 25, telegram_id: 123456 }); //! if success return user uuid else return false
-
-api.getUserList(); // return array
-
-api.findServise(uuid); // return array  for find information uuid
 ```
 
 ## 🤝 Contributing :
