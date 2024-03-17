@@ -23,6 +23,7 @@ class User
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $result = curl_exec($ch);
         curl_close($ch);
 
@@ -171,6 +172,7 @@ class User
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url . '/sub/');
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0');
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $raw_data = curl_exec($ch);
         curl_close($ch);
 
@@ -205,6 +207,7 @@ class User
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             $result = curl_exec($ch);
             curl_close($ch);
 
@@ -254,6 +257,7 @@ class User
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $result = curl_exec($ch);
         curl_close($ch);
 
@@ -281,6 +285,7 @@ class User
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         $result = curl_exec($ch);
         curl_close($ch);
 
