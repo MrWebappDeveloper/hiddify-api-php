@@ -211,6 +211,9 @@ class User
             $result = curl_exec($ch);
             curl_close($ch);
 
+            if(!$result)
+                return null;
+
             $selector = new QuerySelector($result);
 
             $tag = $selector->tag('tr')
